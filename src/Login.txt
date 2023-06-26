@@ -1,0 +1,61 @@
+import axios from 'axios'
+import React, { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+
+function Login() {
+    const navigate=useNavigate()
+    const [values,setValue] = useState({
+        email:'',
+        password:''
+    })
+    axios.defaults.withCredentials=true;
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        axios
+          .post('http://localhost:5000/login', values)
+          .then((res) => {
+            console.log("login: " + res.data.status);
+            if (res.data.status === 'success') {
+              if (res.data.role === 'admin') {
+                navigate('/dashboard');
+              }
+            } else {
+              console.log(res.data.message); // Log the error message for debugging
+            }
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+      };
+      
+  return (
+    <div className='d-flex w-100 vh-100 justify-content-center align-items-center bg-secondary'>
+        <div className='bg-white p-3 w-50'>
+            <h2>Login</h2>
+            <form onSubmit={handleSubmit}>
+            <div className='mb-3'>
+                    <label htmlFor='email'>
+                        <strong>Email</strong>
+                    </label>
+                    <input type='text' name='email' placeholder="Email address" 
+                    autoComplete='off' onChange={(e)=>setValue({...values,email:e.target.value})}
+                    className='form-control rounded-0' required></input>
+                </div>
+                <div className='mb-3'>
+                    <label htmlFor='password'>
+                        <strong>Password</strong>
+                    </label>
+                    <input type='text' name='password' placeholder="Enter your password"
+                    autoComplete='off' onChange={(e)=>setValue({...values,password:e.target.value})}
+                    className='form-control rounded-0' required></input>
+                </div>
+                <button type='submit'className='btn btn-success mb-3'>Login</button>
+                <p>User haven't account</p>
+                <Link to='/signup' className='btn btn-primary'>SignUp</Link>
+            </form>
+        </div>
+    </div>
+  )
+}
+
+export default Login
